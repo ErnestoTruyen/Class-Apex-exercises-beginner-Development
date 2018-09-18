@@ -1,0 +1,28 @@
+({
+    
+    
+    doInit: function (cmp, event, helper) {
+        
+        cmp.set('v.mycolumns', [
+            { label: 'Case Subject', fieldName: 'Subject', type: 'text'},
+            { label: 'Created Date', fieldName: 'CreatedDate', type: 'date'}
+        ]);
+        
+        helper.getData(cmp);
+    },
+    
+    updateSelectedText: function (cmp, event, helper) {
+        var listaSeleccionada = cmp.get("v.dataList");
+        var motivoDelCierre = cmp.find("texto").get("v.value");
+        
+        if(motivoDelCierre.length > 0){
+        	helper.setSelectedRows(cmp, listaSeleccionada, motivoDelCierre);
+        }
+    },
+    
+    insertRow: function (cmp, event, helper) {
+        var selectedRows = event.getParam('selectedRows');
+        cmp.set("v.dataList",selectedRows);
+    }
+    
+})
