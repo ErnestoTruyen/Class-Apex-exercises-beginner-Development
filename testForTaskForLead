@@ -1,0 +1,71 @@
+@isTest
+private class testForTaskForLead {
+	
+    public static Integer NumberOfLeadsInsertOrUpdate = 1000;
+    
+    @isTest
+    static void testInsertLeadWithTask(){
+        List<Lead> listLeads = new List<Lead>();
+        
+        for (Integer i = 0; i < NumberOfLeadsInsertOrUpdate; i++) {
+            listLeads.add(new Lead(LastName = 'LeadTest ' + i,
+                                   Company = 'Example S.A',
+                                   Status = 'Open - Not contacted',
+                                   Descripcion_Personalizada__c = 'Example Description',
+                                   Texto_Auxiliar__c = 'Example Text'));
+        }
+        
+        Test.startTest();
+        	List<Database.SaveResult> results = Database.insert(listLeads);
+        Test.stopTest();
+        
+        System.assertEquals(NumberOfLeadsInsertOrUpdate, new List<Task>([
+                                                                 SELECT Id 
+                                                                 FROM Task
+                                                                 WHERE WhoId IN (
+                                                                         SELECT Id
+                                                                         FROM Lead)
+                                                         ]).size());
+        
+    }
+    
+    @isTest
+    static void testUpdateLeadWithTask(){
+        
+        List<Lead> listLeads = new List<Lead>();
+        
+        for (Integer i = 0; i < NumberOfLeadsInsertOrUpdate; i++) {
+            listLeads.add(new Lead(LastName = 'LeadTest ' + i,
+                                   Company = 'Example S.A',
+                                   Status = 'Open - Not contacted',
+                                   Descripcion_Personalizada__c = 'Example Description',
+                                   Texto_Auxiliar__c = 'Example Text'));
+        }
+        
+        insert listLeads;
+        
+        List<Lead> listLeadsForUpdate = [
+        		SELECT Texto_Auxiliar__c,Descripcion_Personalizada__c
+            	FROM Lead
+            	WHERE Descripcion_Personalizada__c = 'Example Description'
+        ];
+        
+        System.debug(listLeadsForUpdate.size());
+        
+        for (Lead candidato : listLeadsForUpdate) {
+            candidato.Texto_Auxiliar__c = 'Example Test UPDATE';
+        }
+        
+        Test.startTest(); 
+        	List<Database.SaveResult> results = Database.update(listLeadsForUpdate);
+        Test.stopTest();
+        
+        System.assertEquals(NumberOfLeadsInsertOrUpdate, new List<Task>([
+                                						 		SELECT Id 
+                                        						FROM Task
+                                        						WHERE Texto_Auxiliar__c = 'Example Test UPDATE'
+        												 ]).size());
+
+    }
+    
+}
