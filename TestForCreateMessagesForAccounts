@@ -1,0 +1,83 @@
+@isTest
+public class testWrapperClassController {
+	
+    @isTest
+    static void testConstruct(){
+        Test.startTest();
+        Mensaje__c msj = new Mensaje__c(Name = 'Argento');
+        insert msj;
+        Mensaje__c msj2 = [SELECT Id FROM Mensaje__c WHERE Name = 'Argento'];
+        PageReference page = new PageReference('/apex');        
+        page.getParameters().put('id',msj2.Id);
+        Test.setCurrentPage(page);
+        	System.debug(ApexPages.currentPage().getParameters().get('id')+'primero');
+        	wrapperClassController obj = new wrapperClassController();
+        	System.assert(obj.mensaje != null);
+        	System.debug(obj.mensaje);
+        Test.stopTest();
+        
+    }
+    
+    @isTest
+    static void testGetcAccount(){
+        
+        Test.startTest();
+        	List<Account> listAccountTest = new List<Account>();
+        	
+        	for (Integer i = 0; i < 2; i++) {
+                Account cuenta = new Account(Name = '' + i);
+                listAccountTest.add(cuenta);
+            }
+        	insert listAccountTest;
+        	wrapperClassController wrp = new wrapperClassController();
+        	List<cAccount> listTest = wrp.getcAccount();
+        
+        	System.assertEquals(2, listTest.size());
+        	
+        Test.stopTest();
+        
+    }
+    
+    @isTest
+    static void testProcessSelected(){
+        
+        Test.startTest();
+        	//Setting mensaje
+        	
+            Mensaje__c msj = new Mensaje__c(Name = 'Argento');
+            insert msj;
+            Mensaje__c msj2 = [SELECT Id FROM Mensaje__c WHERE Name = 'Argento'];
+            PageReference page = new PageReference('/apex');        
+            page.getParameters().put('id',msj2.Id);
+        	Test.setCurrentPage(page);
+			wrapperClassController wrp = new wrapperClassController();
+        
+        	//Setting getcAccount
+        	List<Account> listAccountTest = new List<Account>();
+        	
+        	for (Integer i = 0; i < 4; i++) {
+                Account cuenta = new Account(Name = '' + i);
+                listAccountTest.add(cuenta);
+            }
+        	
+        	insert listAccountTest;
+        	
+        	wrp.accountList = wrp.getcAccount();
+        	wrp.mensaje.Descripcion__c = 'Test';
+        	wrp.accountList[0].selected = true;
+        	wrp.accountList[1].selected = true;
+        	
+        
+        	//Testing method
+        	wrp.processSelected();
+        
+        	System.assertEquals(2, [
+                	SELECT Id 
+                    FROM AsociacionCuentaMensaje__c 
+            ].size(),'Primer Assert');
+        
+        Test.stopTest();
+        
+    }
+    
+}
