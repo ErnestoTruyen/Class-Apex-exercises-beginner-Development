@@ -1,0 +1,30 @@
+public with sharing class ControllerForCloseCasesLC {
+    
+	@AuraEnabled
+    public static List<Case> getCases(String accountId){
+        
+        System.debug(accountId);
+        
+        List<Case> listCases = [
+            	SELECT Id,CreatedDate,Subject
+                FROM Case
+                WHERE AccountId = :accountId];
+        System.debug(listCases.size());
+        return listCases;
+    }
+    
+    @AuraEnabled
+    public static void setSelectedCases(List<Case> lista, String motivoDelCierre){
+        
+        try{
+            List<Case> updateList = [SELECT Id,Status,Motivo_del_cierre__c FROM Case WHERE Id IN :lista]; 
+            for (Case caso : updateList) {
+                caso.Status = 'Closed';
+                caso.Motivo_del_cierre__c = motivoDelCierre;
+            }
+            update updateList;
+        } catch (exception e){
+            
+        }
+    }
+}
