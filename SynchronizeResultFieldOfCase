@@ -1,0 +1,32 @@
+//Trigger para mantener Sincronizados el campo Resultado__c de 2 Casos relacionados
+trigger SynchronizeResultFieldOfCase on Case (after update) {
+	
+    Try{
+        
+        //Lista de todos los Casos 
+        List<Case> allCases = [SELECT Id,Resultado__c FROM Case];
+       
+        List<Case> CaseForUpsert = new List<Case>();
+        
+        //Bucle para cada caso actualizado
+        for (Case casoPrincipal : Trigger.new) {
+            //Bucle para saber si el caso actualizado esta asociado a 
+            //algun caso de la lista de casos asociados
+            //Es una validacion por si el Caso estuviese asociado a otro objeto
+            for (Case casoAsociado : allCases) {
+                
+                if (casoPrincipal.Caso_Asociado__c == casoAsociado.Id) {
+                    casoAsociado.Resultado__c = casoPrincipal.Resultado__c;
+                    CaseForUpsert.add(casoAsociado);
+                    System.debug('entro a sincronizar');
+                }
+            }
+        }
+        
+        update CaseForUpsert;
+        
+    }Catch(exception e){
+        System.debug('No se pudo sincronizar el campo Resultado__c de los casos | Trigger SynchronizeResultFieldOfCase');
+    }
+    
+}
