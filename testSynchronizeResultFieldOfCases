@@ -1,0 +1,29 @@
+@isTest
+public class testSynchronizeResultFieldOfCases {
+	
+    @isTest
+    static void testUpdateResultField(){
+        
+        	Case CasoPrincipal = new Case(Origin = 'Phone', Subject = 'Asunto para el test');
+        	Case CasoSecundario = new Case(Origin = 'Phone', Subject = 'Asunto para el test');
+        	
+        	insert CasoSecundario;
+        	Case CS = [SELECT Id,Caso_Asociado__c FROM Case WHERE Subject = 'Asunto para el test' LIMIT 1];
+        	
+ 			CasoPrincipal.Caso_Asociado__c = CS.Id;
+        	CasoPrincipal.SuppliedName = 'test@gmail.com';
+        	insert CasoPrincipal;
+        	Case CP = [SELECT Id,Caso_Asociado__c FROM Case WHERE Subject = 'Asunto para el test' AND SuppliedName = 'test@gmail.com' LIMIT 1];
+        
+    	Test.startTest();
+        	CP.Resultado__c = 'UpDaTe';
+        	
+        	update CP;
+            //Asserts
+            System.assertEquals( 2 , [SELECT Id FROM Case WHERE Resultado__c = 'UpDaTe'].size() , 'Assert ejecutado correctamente');
+        Test.stopTest();
+        
+        
+    }
+    
+}
