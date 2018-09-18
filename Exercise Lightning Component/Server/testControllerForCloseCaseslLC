@@ -1,0 +1,44 @@
+@isTest
+public class testControllerForCloseCaseslLC {
+	@isTest
+    public static void testGetCases(){
+        Test.startTest();
+        	Account cuenta = new Account(Name = 'Cuenta 1 test');
+        	insert cuenta;
+        	Account IdCuenta = [SELECT Id FROM Account WHERE Name = 'Cuenta 1 test' LIMIT 1];
+        	List<Case> CasosDeLaCuenta = ControllerForCloseCasesLC.getCases(IdCuenta.Id);
+        	
+        	//ASSERTS
+        	System.assertEquals( 0 , CasosDeLaCuenta.size() , 'Verificacion de inexistencia de casos para una cuenta' );
+        
+        	Case casoParaAccount = new Case(Origin = 'Phone');
+        	casoParaAccount.AccountId = IdCuenta.Id;
+        	insert casoParaAccount;
+        	
+        	CasosDeLaCuenta = ControllerForCloseCasesLC.getCases(IdCuenta.Id);
+        	
+        	//ASSERTS
+        	System.assertEquals( 1 , CasosDeLaCuenta.size() , 'Verificacion de la existencia de un caso para una cuenta' );
+        Test.stopTest();
+    }
+    
+    @isTest
+    public static void testSetSelectedCases(){
+        Test.startTest();
+        	String mensaje = 'Se cerro el caso por que si';
+        	List<Case> listCase = new List<Case>();
+        	for (Integer i = 0; i < 3; i++) {
+                Case caso = new Case(Status = 'New', Origin = 'Phone', Subject = 'testCase',Motivo_del_cierre__c = '');
+                listCase.add(caso);
+            }
+        	insert listCase;
+        	listCase = [SELECT Id,Motivo_del_cierre__c,Status FROM Case WHERE Subject = 'testCase' ];
+        	
+        	ControllerForCloseCasesLc.setSelectedCases(listCase, mensaje);
+        
+        	//ASSERT
+        	System.assertEquals(3, [SELECT Id FROM Case WHERE Status = 'Closed' AND Subject = 'testCase'].size() ,'Verificacion de que se cerraron casos');
+        	
+        Test.stopTest();
+    }
+}
