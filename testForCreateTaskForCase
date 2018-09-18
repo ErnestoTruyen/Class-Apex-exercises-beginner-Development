@@ -1,0 +1,51 @@
+@isTest
+public class testForCreateTaskForCase {
+	
+    @isTest
+    public static void testCreateTaskBefore2Minutes(){
+
+            Task tareaTest = new Task(Subject = 'Call',
+                                      CallObject = 'tareaTest');
+            Case casetest = new Case(Subject = 'caseTest');        
+        
+        Test.startTest();
+            insert tareaTest;
+        	insert caseTest;
+        	
+        	// Traigo la tarea y el caso insertados para obtener sus id correspondientes
+        	Task LastTask = [SELECT Id,CreatedDate FROM Task WHERE CallObject = 'tareaTest' LIMIT 1];
+        	Case LastCase = [SELECT Id,CreatedDate FROM Case WHERE Subject = 'caseTest' LIMIT 1];
+        		
+        	//ASSERTS
+        	System.assertEquals( 1 ,[SELECT Id FROM Task WHERE WhatId = :LastCase.Id].size() , 'Assert test 1, Insercion de Tarea');
+        	
+        Test.stopTest();
+    }
+    
+    static testMethod void testCreateTaskAfter2Minutes(){
+        
+        
+        	Task tareaTest = new Task(Subject = 'Call',
+                                      CallObject = 'tareaTest');
+            Case casetest = new Case(Subject = 'caseTest');
+            
+            insert tareaTest;
+        	//Traigo la tarea insertada para obtener su id
+        	Task LastTask = [SELECT Id,CreatedDate FROM Task WHERE CallObject = 'tareaTest' LIMIT 1];
+           		
+        	Test.setCreatedDate(LastTask.Id, LastTask.CreatedDate.addMinutes(-4));
+        		        	
+        Test.startTest();
+        	insert caseTest;
+        	//Traigo el caso insertado para obtener su id
+        	Case LastCase = [SELECT Id,CreatedDate FROM Case WHERE Subject = 'caseTest' LIMIT 1];
+        	
+        	//ASSERTS
+        	System.assertEquals( new List<Task>() , [SELECT Id FROM Task WHERE WhatId = :LastCase.Id],'Assert test 2, No Insercion de Tarea');
+        	
+        Test.stopTest();
+        
+        
+        
+    }
+}
