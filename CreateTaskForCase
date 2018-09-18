@@ -1,0 +1,30 @@
+//Creacion de una Tarea(Dependiendo el tiempo) para cada caso 
+trigger CreateTaskForCase on Case (after insert) {
+    try{
+    	Task LastTask = [SELECT Id,WhatId,CreatedDate FROM Task ORDER BY CreatedDate ASC LIMIT 1 ];
+  		System.debug(LastTask);
+            for (Case caso : Trigger.new) {
+        
+                if (LastTask != null) {
+                    Long fhTarea = LastTask.CreatedDate.getTime();
+                    Long fhCaso = Caso.CreatedDate.getTime();
+                    Long diferenciaMilisegundo = fhCaso -fhTarea;
+                    Long diferenciaSegundo = diferenciaMilisegundo / 1000;
+                    Long diferenciaMinuto = diferenciaSegundo / 60;
+                    
+                    if ( diferenciaMinuto < 2 ) {
+                        LastTask.WhatId = caso.Id;
+                        update LastTask;
+                        System.debug('Se ha Creado y Asociado la ultima tarea al Caso creado');
+                    }else{
+                        System.debug('No hay Tareas en los ultimos 2 minutos para relacionar');
+                    }
+                }
+                       
+            }
+    } catch(exception e){
+        System.debug('Return query is NUll | Trigger CreateTaskForCase');
+    }
+
+    
+}
