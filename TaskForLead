@@ -1,0 +1,51 @@
+//Creacion de una tarea por cada Lead(Nuevo o actualizado)
+trigger TaskForLead on Lead (after insert, after update) {
+    
+    if(Trigger.isInsert){
+        
+        List<Task> lstTask = new List<Task>();
+        
+        for(Lead candidato : Trigger.new){
+            
+            Task tareaAsociada = new Task();
+            
+            tareaAsociada.WhoId = candidato.Id; 
+            tareaAsociada.Subject = candidato.FirstName;
+            //Requisitos del ejercicio
+            //Sincronizar los campos de ambos objetos, Lead and Task
+            tareaAsociada.Descripcion_Personalizada__c = candidato.Descripcion_Personalizada__c;
+            tareaAsociada.Texto_Auxiliar__c = candidato.Texto_Auxiliar__c;
+            
+            lstTask.add(tareaAsociada);
+        }
+        
+        insert lstTask;
+        
+    }else if(Trigger.isUpdate){
+        
+        List<Task> lstTaskUpdate = new List<Task>(); 
+        
+        List<Lead> listLeadsIds = new List<Lead>([SELECT Id FROM Lead]);
+        
+        List<Task> listTaskForUpdate = [
+            	SELECT Descripcion_Personalizada__c,Texto_Auxiliar__c,WhoId 
+                FROM Task 
+                WHERE WhoId IN :listLeadsIds
+        ];
+        
+        for(Lead candidato : Trigger.new){ 
+            
+            for (Task tarea : listTaskForUpdate) {
+                if (tarea.WhoId == candidato.Id) {
+                    tarea.Descripcion_Personalizada__c = candidato.Descripcion_Personalizada__c;
+            		tarea.Texto_Auxiliar__c = candidato.Texto_Auxiliar__c;
+                    lstTaskUpdate.add(tarea);
+                }
+            }
+                        
+            
+        }
+        
+        upsert lstTaskUpdate;
+    }
+}
