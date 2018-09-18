@@ -1,0 +1,42 @@
+({
+    getData : function(cmp) {
+        var action = cmp.get('c.getCases');
+       
+        action.setParams({
+            "accountId" : cmp.get("v.recordId")
+        });
+        
+        action.setCallback(this, $A.getCallback(function (response) {
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                cmp.set('v.mydata', response.getReturnValue());
+            } else if (state === "ERROR") {
+                var errors = response.getError();
+                console.error(errors);
+            }
+        }));
+        
+        $A.enqueueAction(action);
+    },
+    
+    setSelectedRows : function(cmp, selectedRows, motivoDelCierre) {
+        var action = cmp.get('c.setSelectedCases');
+       
+        action.setParams({
+            "lista" : selectedRows,
+            "motivoDelCierre" : motivoDelCierre
+        });
+        
+        action.setCallback(this, $A.getCallback(function (response) {
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                alert("Casos cerrados");
+            } else if (state === "ERROR") {
+                var errors = response.getError();
+                console.error(errors);
+            }
+        }));
+        
+        $A.enqueueAction(action);
+    }
+})
