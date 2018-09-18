@@ -1,0 +1,31 @@
+<apex:page controller="wrapperClassController" >
+    <style type="text/css">
+      					
+    </style>
+    <script>
+    	function myfunction(){
+            document.getElementByid('texto').focus(false);
+        }
+    </script>
+    
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Process Selected" action="{!processSelected}" rerender="table"/>
+            </apex:pageBlockButtons>
+            <div style="overflow: scroll; width: auto; height: 120px;">
+                <apex:pageBlockTable value="{!cAccount}" var="a" id="table" >
+                    <apex:column >
+                        <!-- This is our selected Boolean property in our wrapper class -->
+                        <apex:inputCheckbox value="{!a.selected}"/>
+                    </apex:column>
+                    <!-- This is how we access the contact values within our cContact container/wrapper -->
+                    <apex:column value="{!a.acc.Name}" />
+                    <apex:column value="{!a.acc.Phone}" />
+                </apex:pageBlockTable>
+            </div>
+                <apex:inputField value="{!mensaje.Descripcion__c}" onfocus="myfunction()" id="texto" />
+            	
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>
