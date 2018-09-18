@@ -1,0 +1,97 @@
+public with sharing  class wrapperClassController {
+    
+	public List<cAccount> accountList {get; set;}
+    public Mensaje__c mensaje {get; set;}
+	
+
+	//CONSTRUCT    
+	//----------------------------------------------------------------------------
+	////----------------------------------------------------------------------------
+    public wrapperClassController(){
+       
+        try{
+            Mensaje__c sms = [
+                    SELECT Id,Name,Descripcion__c,AccountId__c 
+                    FROM Mensaje__c 
+                    WHERE Id = :ApexPages.currentPage().getParameters().get('id')
+            ];
+            
+            mensaje = sms;   
+        }catch(exception e){
+            System.debug('NO encotro el mensaje');
+        }
+    }
+    //----------------------------------------------------------------------------
+    ////----------------------------------------------------------------------------
+
+	
+    //----------------------------------------------------------------------------
+    ////----------------------------------------------------------------------------
+	public List<cAccount> getcAccount() {
+		if (accountList == null) {
+			accountList = new List<cAccount>();
+			for (Account a: [select Id, Name, Phone from Account ORDER BY Name]) {
+				
+				accountList.add(new cAccount(a));
+			}
+		}
+		return accountList;
+	}
+    
+    //----------------------------------------------------------------------------
+    ////----------------------------------------------------------------------------
+	
+    
+    //----------------------------------------------------------------------------
+    ////----------------------------------------------------------------------------
+	public PageReference processSelected() {
+		
+                
+		List<Account> selectedAccounts = new List<Account>();
+        //List<Mensaje__c> listaMensajes = new List<Mensaje__c>();
+
+		
+		for(cAccount cAcc: getcAccount()) {
+			if(cAcc.selected == true) {
+				selectedAccounts.add(cAcc.acc);
+			}
+		}
+
+		
+		System.debug('These are the selected Contacts...');
+		for(Account acc: selectedAccounts) {
+           
+            AsociacionCuentaMensaje__c asoc = new AsociacionCuentaMensaje__c();
+            
+            asoc.Cuenta__c = acc.Id;
+            asoc.Mensaje__c = mensaje.id;
+            
+            insert asoc;
+		}
+        
+        upsert mensaje;
+        
+		accountList=null;
+		return null;
+	}
+	//----------------------------------------------------------------------------
+	////----------------------------------------------------------------------------
+	
+	
+    
+    //----------------------------------------------------------------------------
+    ////----------------------------------------------------------------------------
+    //Classes
+    /*
+	public class cAccount {
+		public Account acc {get; set;}
+		public Boolean selected {get; set;}
+
+		
+		public cAccount(Account a) {
+			acc = a;
+			selected = false;
+		}
+	}
+     */
+}
