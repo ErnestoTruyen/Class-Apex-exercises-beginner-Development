@@ -1,0 +1,10 @@
+public class cAccount {
+	public Account acc {get; set;}
+	public Boolean selected {get; set;}
+
+		
+	public cAccount(Account a) {
+		acc = a;
+		selected = false;
+	}
+}
