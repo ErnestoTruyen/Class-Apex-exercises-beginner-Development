@@ -1,0 +1,24 @@
+<aura:component controller="ControllerForCloseCasesLC" implements="flexipage:availableForRecordHome,force:hasRecordId"  >
+   
+   	<aura:attribute name="mydata" type="Object"/>
+    <aura:attribute name="dataList" type="List" default="[]"/>
+    <aura:attribute name="mycolumns" type="List"/>
+ 
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+   	<div style="height: 150px">
+    <lightning:datatable data="{! v.mydata }"
+                         columns="{! v.mycolumns }"
+                         keyField="Id"
+                         enableInfiniteLoading = "true"
+                         hideCheckboxColumn="false"
+                         onrowselection="{!c.insertRow}"/>
+    </div>
+    <lightning:input name="motivoTexto" aura:id="texto" required="true" label="Motivo del cierre de casos" />
+    
+    <lightning:button label="Close Cases" 
+                                      class="slds-m-top--medium"
+                                      variant="brand"
+                                      onclick="{!c.updateSelectedText}"/>
+    
+</aura:component>
