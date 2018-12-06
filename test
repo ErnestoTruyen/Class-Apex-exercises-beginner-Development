@@ -2,7 +2,7 @@
     <apex:stylesheet value="{!$Resource.EntrevistaPersonalStyle}"/>
 
     <head>
-	
+
         <style>
             .tabla {
             border: solid 1px rgb(221, 219, 218) !important;
@@ -165,9 +165,7 @@
 
             </apex:PageBlock>
         </apex:outputPanel>
-		
-        
-        
+
         <!-- SALTO DE PAGINA -->
         <div style="page-break-after: always;"><span style="display: none;">&nbsp;</span></div>
 
