@@ -2,7 +2,8 @@
     <apex:stylesheet value="{!$Resource.EntrevistaPersonalStyle}"/>
 
     <head>
-
+	
+	
         <style>
             .tabla {
             border: solid 1px rgb(221, 219, 218) !important;
