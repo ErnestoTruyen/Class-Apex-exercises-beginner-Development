@@ -2,7 +2,7 @@
     <apex:stylesheet value="{!$Resource.EntrevistaPersonalStyle}"/>
 
     <head>
-	
+	texto
 	
         <style>
             .tabla {
